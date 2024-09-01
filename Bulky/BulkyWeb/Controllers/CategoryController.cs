@@ -25,16 +25,16 @@ namespace BulkyWeb.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create(Category obj) 
+        public IActionResult Create(Category category) 
         {
-            if (obj.Name == obj.DisplayOrder.ToString())
+            if (category.Name == category.DisplayOrder.ToString())
             {
                 ModelState.AddModelError("Name", "The Display Order cannot exactly match the Name.");
             }
 
             if (ModelState.IsValid)
             {
-                _db.categories.Add(obj);
+                _db.categories.Add(category);
                 _db.SaveChanges();
 				return RedirectToAction("Index");
 			}
@@ -59,21 +59,52 @@ namespace BulkyWeb.Controllers
 		}
 
 		[HttpPost]
-		public IActionResult Edit(Category obj)
+		public IActionResult Edit(Category category)
 		{
-			if (obj.Name == obj.DisplayOrder.ToString())
+			if (category.Name == category.DisplayOrder.ToString())
 			{
 				ModelState.AddModelError("Name", "The Display Order cannot exactly match the Name.");
 			}
 
 			if (ModelState.IsValid)
 			{
-				_db.categories.Update(obj);
+				_db.categories.Update(category);
 				_db.SaveChanges();
 				return RedirectToAction("Index");
 			}
 
 			return View();
+		}
+
+		public IActionResult Delete(int? id)
+		{
+			if (id == null || id == 0)
+			{
+				return NotFound();
+			}
+
+			Category category = _db.categories.Find(id);
+
+			if (category == null)
+			{
+				return NotFound();
+			}
+			return View(category);
+		}
+
+		[HttpPost, ActionName("Delete")]
+		public IActionResult DeletePost(int? id)
+		{
+			Category? category = _db.categories.Find(id);
+
+			if (category == null)
+			{
+				return NotFound();
+			}
+
+			_db.categories.Remove(category);
+			_db.SaveChanges();
+			return RedirectToAction("Index");
 		}
 	}
 }
