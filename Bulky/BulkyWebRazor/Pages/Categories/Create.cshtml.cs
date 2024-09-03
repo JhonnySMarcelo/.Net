@@ -21,9 +21,19 @@ namespace BulkyWebRazor.Pages.Categories
 
         public IActionResult OnPost()
         {
-            _db.categories.Add(Category);
-            _db.SaveChanges();
-            return RedirectToPage("Index");
+			if (Category?.Name == Category?.DisplayOrder.ToString())
+			{
+				ModelState.AddModelError("Name", "The Display Order cannot exactly match the Name.");
+			}
+
+            if (ModelState.IsValid)
+            {
+                _db.categories.Add(Category);
+                _db.SaveChanges();
+                return RedirectToPage("Index");
+            }
+
+            return Page();
         }
     }
 }
